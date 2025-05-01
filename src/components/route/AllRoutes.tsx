@@ -23,12 +23,26 @@ const AllRoutes = (props: AllRoutesProps) => {
 
     return (
         <Routes>
+            {/* Public routes that don't require authentication */}
+            <Route path="/" element={<PublicRoute />}>
+                {publicRoutes.map((route) => (
+                    <Route
+                        key={route.path}
+                        path={route.path}
+                        element={
+                            <AppRoute
+                                routeKey={route.key}
+                                component={route.component}
+                                {...route.meta}
+                            />
+                        }
+                    />
+                ))}
+            </Route>
+            
+            {/* Protected routes that require authentication */}
             <Route path="/" element={<ProtectedRoute />}>
-                <Route
-                    path="/"
-                    element={<Navigate replace to={authenticatedEntryPath} />}
-                />
-                {protectedRoutes.map((route, index) => (
+                {protectedRoutes.filter(route => route.path !== '/').map((route, index) => (
                     <Route
                         key={route.key + index}
                         path={route.path}
@@ -49,21 +63,6 @@ const AllRoutes = (props: AllRoutesProps) => {
                     />
                 ))}
                 <Route path="*" element={<Navigate replace to="/" />} />
-            </Route>
-            <Route path="/" element={<PublicRoute />}>
-                {publicRoutes.map((route) => (
-                    <Route
-                        key={route.path}
-                        path={route.path}
-                        element={
-                            <AppRoute
-                                routeKey={route.key}
-                                component={route.component}
-                                {...route.meta}
-                            />
-                        }
-                    />
-                ))}
             </Route>
         </Routes>
     )
